@@ -1,0 +1,266 @@
+/* ============================================================
+   ETHAQA DESIGN SYSTEM — v1.0.0
+   ============================================================
+   Master token file for the entire Ethaqa ecosystem.
+   Consumed by: Corporate, Publishing, Procurement OS,
+                PlantWise AI, and future properties.
+
+   Source of truth: Ethaqa Brand Standards v1.0
+   Location:        /assets/css/tokens.css
+   Version:         1.0.0
+   ============================================================ */
+
+:root {
+  /* ============================================================
+     01 — COLOUR
+     Brand Standards page 6 + product accents page 7
+     ============================================================ */
+
+  /* Core brand */
+  --color-navy:            #0B2F5B;
+  --color-navy-deep:       #08203D;
+  --color-gold:            #B8933F;
+  --color-gold-soft:       #D4B36A;
+  --color-ink:             #111111;
+  --color-slate:           #7D8491;
+  --color-mist:            #F4F5F7;
+  --color-paper:           #FFFFFF;
+
+  /* Product / category accents (Brand Standards page 7) */
+  --color-copper:          #BC5E1E;
+  --color-teal:            #008C82;
+  --color-purple:          #7251BC;
+  --color-blue:            #0072C6;
+
+  /* Reverse tones (for navy backgrounds) */
+  --color-copper-on-navy:  #D9773A;
+  --color-purple-on-navy:  #9B7BE8;
+  --color-blue-on-navy:    #3FA0F0;
+
+  /* Extended accents for publishing and future products */
+  --color-rose:            #C2547A;
+  --color-emerald:         #1F8A54;
+  --color-sky:             #4A90C2;
+
+  /* Semantic category tokens */
+  --category-leadership:           var(--color-gold);
+  --category-business:             var(--color-teal);
+  --category-procurement:          var(--color-copper);
+  --category-ai:                   var(--color-purple);
+  --category-technology:           var(--color-blue);
+  --category-coloring:             var(--color-rose);
+  --category-children:             var(--color-sky);
+  --category-education:            var(--color-emerald);
+  --category-reference:            var(--color-navy);
+  --category-workbooks:            var(--color-gold);
+  --category-journals:             var(--color-slate);
+  --category-default:              var(--color-slate);
+
+  /* Category soft tints (8% opacity) */
+  --category-leadership-bg:        rgba(184, 147, 63, 0.08);
+  --category-business-bg:          rgba(0, 140, 130, 0.08);
+  --category-procurement-bg:       rgba(188, 94, 30, 0.08);
+  --category-ai-bg:                rgba(114, 81, 188, 0.08);
+  --category-technology-bg:        rgba(0, 114, 198, 0.08);
+  --category-coloring-bg:          rgba(194, 84, 122, 0.08);
+  --category-children-bg:          rgba(74, 144, 194, 0.08);
+  --category-education-bg:         rgba(31, 138, 84, 0.08);
+
+  /* Semantic state colours */
+  --color-success:                 #008C82;
+  --color-warning:                 #B8933F;
+  --color-error:                   #C0392B;
+  --color-info:                    #0072C6;
+
+  /* Text hierarchy */
+  --text-primary:                  var(--color-navy);
+  --text-secondary:                #2A3441;
+  --text-tertiary:                 #556070;
+  --text-muted:                    var(--color-slate);
+  --text-inverse:                  var(--color-paper);
+
+  /* ============================================================
+     02 — TYPOGRAPHY
+     Brand Standards page 10
+     ============================================================ */
+
+  --font-display:          'Poppins', system-ui, sans-serif;
+  --font-body:             'Inter', system-ui, sans-serif;
+  --font-mono:             'JetBrains Mono', ui-monospace, monospace;
+  --font-serif:            Georgia, 'Times New Roman', serif;
+
+  /* Fluid type scale */
+  --type-display:          clamp(2.8rem, 6vw, 5rem);
+  --type-h1:               clamp(1.9rem, 3.6vw, 2.9rem);
+  --type-h2:               clamp(1.3rem, 2vw, 1.7rem);
+  --type-h3:               1.15rem;
+  --type-h4:               1rem;
+  --type-body:             1rem;
+  --type-small:            0.875rem;
+  --type-mono:             0.6875rem;
+  --type-book-title:       clamp(2.2rem, 4.4vw, 3.4rem);
+
+  /* Line heights */
+  --leading-display:       1.05;
+  --leading-heading:       1.15;
+  --leading-body:          1.6;
+  --leading-relaxed:       1.75;
+
+  /* Letter spacing */
+  --tracking-display:      -0.03em;
+  --tracking-heading:      -0.02em;
+  --tracking-body:         0;
+  --tracking-mono:         0.22em;
+
+  /* Font weights */
+  --weight-regular:        400;
+  --weight-medium:         500;
+  --weight-semibold:       600;
+  --weight-bold:           700;
+
+  /* ============================================================
+     03 — SPACING
+     4px base scale
+     ============================================================ */
+
+  --space-1:               4px;
+  --space-2:               8px;
+  --space-3:               12px;
+  --space-4:               16px;
+  --space-6:               24px;
+  --space-8:               32px;
+  --space-12:              48px;
+  --space-16:              64px;
+  --space-24:              96px;
+  --space-32:              128px;
+  --space-40:              160px;
+  --space-48:              192px;
+
+  /* ============================================================
+     04 — RADIUS
+     Brand is precise — sharp corners by default.
+     ============================================================ */
+
+  --radius-0:              0;
+  --radius-1:              2px;
+  --radius-sm:             4px;
+  --radius-md:             8px;
+  --radius-lg:             12px;
+  --radius-full:           9999px;
+
+  /* ============================================================
+     05 — BORDERS
+     ============================================================ */
+
+  --border-hairline:       1px solid rgba(11, 47, 91, 0.10);
+  --border-rule:           1px solid rgba(11, 47, 91, 0.12);
+  --border-on-navy:        1px solid rgba(255, 255, 255, 0.09);
+  --border-on-navy-soft:   1px solid rgba(255, 255, 255, 0.15);
+
+  /* ============================================================
+     06 — SHADOWS
+     ============================================================ */
+
+  --shadow-sm:             0 4px 12px -4px rgba(11, 47, 91, 0.12);
+  --shadow-md:             0 12px 32px -16px rgba(11, 47, 91, 0.20);
+  --shadow-lg:             0 24px 60px -30px rgba(11, 47, 91, 0.30);
+
+  --shadow-book:           0 20px 40px -20px rgba(11, 47, 91, 0.35),
+                           0 8px 16px -8px rgba(11, 47, 91, 0.15);
+  --shadow-book-hover:     0 32px 60px -24px rgba(11, 47, 91, 0.40),
+                           0 12px 24px -12px rgba(11, 47, 91, 0.20);
+
+  /* ============================================================
+     07 — MOTION
+     ============================================================ */
+
+  --ease-standard:         cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out:              cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:           cubic-bezier(0.65, 0, 0.35, 1);
+
+  --duration-fast:         180ms;
+  --duration-base:         350ms;
+  --duration-slow:         700ms;
+  --duration-reveal:       1000ms;
+
+  /* ============================================================
+     08 — BREAKPOINTS (reference values)
+     ============================================================ */
+
+  /* --bp-mobile:          480px; */
+  /* --bp-tablet:          720px; */
+  /* --bp-laptop:          980px; */
+  /* --bp-desktop:         1100px; */
+  /* --bp-wide:            1440px; */
+
+  /* ============================================================
+     09 — Z-INDEX
+     ============================================================ */
+
+  --z-base:                1;
+  --z-sticky:              100;
+  --z-overlay:             500;
+  --z-modal:               1000;
+
+  /* ============================================================
+     10 — CONTAINER
+     ============================================================ */
+
+  --container-narrow:      720px;
+  --container-default:     1100px;
+  --container-wide:        1360px;
+  --container-padding:     40px;
+  --container-padding-sm:  20px;
+
+  /* ============================================================
+     11 — GRID (publishing)
+     ============================================================ */
+
+  --grid-gap-book:         24px;
+  --grid-gap-book-lg:      32px;
+
+  /* ============================================================
+     12 — ACCESSIBILITY
+     ============================================================ */
+
+  --touch-target:          44px;
+  --focus-ring-width:      2px;
+  --focus-ring-offset:     3px;
+  --focus-ring-color:      var(--color-gold);
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   LOGICAL PROPERTIES POLICY
+   ============================================================
+   All components must use logical properties:
+
+     margin-inline-start     instead of  margin-left
+     margin-inline-end       instead of  margin-right
+     padding-inline          instead of  padding-left/right
+     padding-block           instead of  padding-top/bottom
+     border-inline-start     instead of  border-left
+     border-inline-end       instead of  border-right
+     inset-inline            instead of  left/right
+     text-align: start       instead of  text-align: left
+
+   Zero cost today. Zero refactoring when Arabic RTL is added.
+   ============================================================ */
+
+/* ============================================================
+   END — Ethaqa Design System v1.0.0
+   ============================================================ */

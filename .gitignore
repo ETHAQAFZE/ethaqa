@@ -1,0 +1,23 @@
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Build folders
+node_modules/
+.next/
+dist/
+build/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

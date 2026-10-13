@@ -1,0 +1,280 @@
+---
+// ============================================================
+// Ethaqa Publishing — Site Footer
+// Document ID: ETH-IA-001
+// Version: 1.0.1
+//
+// Renders the global footer for every Ethaqa property.
+// The footer is identical across business units, except for
+// the first column's logo lockup.
+//
+// All footer content is driven by the shared config in
+// src/config/navigation.ts. Nothing is hand-authored here.
+// ============================================================
+
+import {
+  footerColumns,
+  socialLinks,
+  registeredOffice,
+  copyright,
+  getContextForPath,
+} from '../config/navigation';
+
+// ------------------------------------------------------------
+// Resolve current context for the logo lockup
+// ------------------------------------------------------------
+const currentPath = Astro.url.pathname;
+const context = getContextForPath(currentPath);
+const isBusinessUnit = context !== 'corporate';
+
+function capitalize(s: string): string {
+  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+const logoAlt = isBusinessUnit
+  ? `Ethaqa | ${capitalize(context.replace('-', ' '))}`
+  : 'Ethaqa';
+---
+
+<footer class="footer">
+  <div class="wrap">
+
+    <div class="foot-grid">
+
+      <!-- Column 1 — Brand -->
+      <div class="foot-brand">
+        <img
+          src="/assets/brand/ethaqa_horizontal_color.svg"
+          alt={logoAlt}
+          class="ethaqa-logo"
+          width="185"
+          height="42"
+          loading="lazy"
+        />
+        <p>
+          Engineering intelligent business systems for the
+          world's most ambitious enterprises.
+        </p>
+      </div>
+
+      <!-- Columns 2–4 — Driven by config -->
+      {footerColumns.map((col) => (
+        <div class="foot-col">
+          <div class="foot-col-label">{col.title}</div>
+          <ul>
+            {col.links.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <!-- Column 5 — Registered Office -->
+      <div class="foot-col">
+        <div class="foot-col-label">Registered Office</div>
+        <address>
+          <strong>{registeredOffice.name}</strong><br />
+          {registeredOffice.addressLines.map((line, i) => (
+            <>
+              {line}
+              {i < registeredOffice.addressLines.length - 1 && <br />}
+            </>
+          ))}
+          <br /><br />
+          <a href={`tel:${registeredOffice.phone.replace(/\s/g, '')}`}>
+            {registeredOffice.phone}
+          </a>
+          <br />
+          <a href={`mailto:${registeredOffice.email}`}>
+            {registeredOffice.email}
+          </a>
+        </address>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar — legal, social, copyright -->
+    <div class="foot-bottom">
+      <div class="foot-copyright">
+        {copyright.text}
+      </div>
+
+      <div class="foot-social">
+        {socialLinks.map((link) => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={link.label}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      <div class="foot-legal">
+        {footerColumns
+          .find((col) => col.title === 'Legal')
+          ?.links.map((link) => (
+            <a href={link.href}>{link.label}</a>
+          ))}
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  /* ============================================================
+     FOOTER — matches corporate site
+     ============================================================ */
+
+  .footer {
+    background: var(--color-mist);
+    padding: 80px 0 40px;
+    border-top: var(--border-hairline);
+  }
+
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1.6fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+
+  .foot-brand .ethaqa-logo {
+    margin-bottom: 28px;
+  }
+
+  .foot-brand p {
+    font-size: 0.9rem;
+    color: var(--color-navy);
+    opacity: 0.75;
+    max-width: 38ch;
+    line-height: 1.7;
+  }
+
+  .foot-col-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-navy);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .foot-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .foot-col li {
+    margin-bottom: 12px;
+  }
+
+  .foot-col a {
+    font-size: 0.88rem;
+    color: var(--color-navy);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-standard);
+  }
+
+  .foot-col a:hover {
+    color: var(--color-gold);
+  }
+
+  .foot-col address {
+    font-style: normal;
+    font-size: 0.88rem;
+    color: #2A3441;
+    line-height: 1.9;
+  }
+
+  .foot-col address strong {
+    color: var(--color-navy);
+    font-weight: 500;
+  }
+
+  .foot-col address a {
+    color: var(--color-navy);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(11, 47, 91, 0.15);
+    padding-bottom: 1px;
+    transition:
+      color var(--duration-base) var(--ease-standard),
+      border-color var(--duration-base) var(--ease-standard);
+  }
+
+  .foot-col address a:hover {
+    color: var(--color-gold);
+    border-bottom-color: var(--color-gold);
+  }
+
+  /* Bottom bar */
+  .foot-bottom {
+    border-top: var(--border-hairline);
+    padding-top: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-navy);
+    letter-spacing: 0.08em;
+  }
+
+  .foot-copyright {
+    flex-shrink: 0;
+  }
+
+  .foot-social,
+  .foot-legal {
+    display: flex;
+    gap: 32px;
+  }
+
+  .foot-social a,
+  .foot-legal a {
+    color: var(--color-navy);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-standard);
+  }
+
+  .foot-social a:hover,
+  .foot-legal a:hover {
+    color: var(--color-gold);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  @media (max-width: 1100px) {
+    .foot-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .footer {
+      padding: 60px 0 30px;
+    }
+
+    .foot-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .foot-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: start;
+    }
+  }
+</style>

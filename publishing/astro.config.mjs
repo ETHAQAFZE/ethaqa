@@ -55,6 +55,7 @@ export default defineConfig({
         '@content': new URL('./src/content', import.meta.url).pathname,
         '@utils': new URL('./src/utils', import.meta.url).pathname,
         '@assets': new URL('./src/assets', import.meta.url).pathname,
+        '@config': new URL('./src/config', import.meta.url).pathname,
       },
     },
   },

@@ -1,0 +1,497 @@
+---
+// ============================================================
+// Ethaqa Publishing — Site Header
+// Document ID: ETH-IA-001
+// Version: 1.0.1
+//
+// Renders the global header for every Ethaqa property.
+// The header is identical across business units, except for:
+//   - The logo lockup (Ethaqa vs. Ethaqa | <Unit>)
+//   - The CTA label and destination (context-sensitive)
+//
+// Both variations are driven by the shared config in
+// src/config/navigation.ts. No navigation is hand-authored here.
+// ============================================================
+
+import {
+  primaryNav,
+  getCTAForPath,
+  getContextForPath,
+  type NavDropdown,
+  type NavLink,
+} from '../config/navigation';
+
+// ------------------------------------------------------------
+// Resolve current context from the request URL
+// ------------------------------------------------------------
+const currentPath = Astro.url.pathname;
+const context = getContextForPath(currentPath);
+const cta = getCTAForPath(currentPath);
+
+// ------------------------------------------------------------
+// Resolve the correct logo lockup for the current context.
+// Business units use the endorsed lockup; corporate uses the
+// full horizontal lockup.
+// ------------------------------------------------------------
+const isBusinessUnit = context !== 'corporate';
+const logoAlt = isBusinessUnit
+  ? `Ethaqa | ${capitalize(context.replace('-', ' '))}`
+  : 'Ethaqa';
+
+function capitalize(s: string): string {
+  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// ------------------------------------------------------------
+// Helper: type guard for dropdown items
+// ------------------------------------------------------------
+function isDropdown(item: typeof primaryNav[number]): item is NavDropdown {
+  return 'items' in item;
+}
+---
+
+<!-- ============================================================
+     SKIP LINK
+     ============================================================ -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="hdr" id="hdr">
+  <div class="wrap hdr-inner">
+
+    <!-- Logo -->
+    <a href="/" class="logo-link" aria-label={`${logoAlt} home`}>
+      <img
+        src="/assets/brand/ethaqa_horizontal_color.svg"
+        alt={logoAlt}
+        class="ethaqa-logo"
+        width="200"
+        height="46"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </a>
+
+    <!-- Primary navigation -->
+    <nav aria-label="Main navigation">
+      <ul class="nav">
+        {primaryNav.map((item) =>
+          isDropdown(item) ? (
+            <li class="nav-dropdown">
+              <button
+                type="button"
+                class="nav-dropdown-trigger"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                {item.label}
+                <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" fill="none">
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <ul class="nav-dropdown-menu">
+                {item.items.map((sub: NavLink) => (
+                  <li>
+                    <a href={sub.href}>{sub.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          )
+        )}
+      </ul>
+    </nav>
+
+    <!-- Context-sensitive CTA -->
+    <div class="hdr-cta">
+      <span class="mono">Enterprise Intelligence</span>
+      <a href={cta.href} class="btn btn-gold">
+        {cta.label} <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <!-- Mobile menu toggle -->
+    <button
+      type="button"
+      class="mobile-menu-toggle"
+      aria-label="Toggle navigation menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+</header>
+
+<!-- ============================================================
+     MOBILE MENU
+     Rendered as a separate element, shown/hidden via JS.
+     ============================================================ -->
+<div class="mobile-menu" id="mobile-menu" hidden>
+  <nav aria-label="Mobile navigation">
+    <ul>
+      {primaryNav.map((item) =>
+        isDropdown(item) ? (
+          <li>
+            <span class="mobile-menu-group">{item.label}</span>
+            <ul>
+              {item.items.map((sub: NavLink) => (
+                <li><a href={sub.href}>{sub.label}</a></li>
+              ))}
+            </ul>
+          </li>
+        ) : (
+          <li><a href={item.href}>{item.label}</a></li>
+        )
+      )}
+    </ul>
+    <div class="mobile-menu-cta">
+      <a href={cta.href} class="btn btn-gold">
+        {cta.label} <span class="arrow">→</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+<script>
+  // ----------------------------------------------------------
+  // Header scroll state — adds shadow when scrolled
+  // ----------------------------------------------------------
+  const hdr = document.getElementById('hdr');
+  if (hdr) {
+    const onScroll = () => {
+      hdr.classList.toggle('scrolled', window.scrollY > 40);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // ----------------------------------------------------------
+  // Mobile menu toggle
+  // ----------------------------------------------------------
+  const toggle = document.querySelector('.mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      menu.hidden = isOpen;
+
+      // Lock body scroll while menu is open
+      document.body.style.overflow = isOpen ? '' : 'hidden';
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) {
+        toggle.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Close when a link inside the menu is clicked
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  // ----------------------------------------------------------
+  // Dropdown menus — click to toggle
+  // ----------------------------------------------------------
+  document.querySelectorAll('.nav-dropdown-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+      // Close any other open dropdowns
+      document.querySelectorAll('.nav-dropdown-trigger').forEach((other) => {
+        if (other !== trigger) other.setAttribute('aria-expanded', 'false');
+      });
+
+      trigger.setAttribute('aria-expanded', String(!isOpen));
+    });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('.nav-dropdown')) {
+      document.querySelectorAll('.nav-dropdown-trigger').forEach((trigger) => {
+        trigger.setAttribute('aria-expanded', 'false');
+      });
+    }
+  });
+</script>
+
+<style>
+  /* ============================================================
+     HEADER — persistent light band, matches corporate site
+     ============================================================ */
+
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    inset-inline-start: 16px;
+    z-index: var(--z-modal);
+    padding: 12px 20px;
+    background: var(--color-navy);
+    color: var(--color-paper);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: top var(--duration-base) var(--ease-standard);
+  }
+  .skip-link:focus {
+    top: 16px;
+  }
+
+  .hdr {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: var(--z-sticky);
+    padding: 16px 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(11, 47, 91, 0.08);
+    transition:
+      padding 0.3s var(--ease-standard),
+      background 0.3s var(--ease-standard),
+      box-shadow 0.3s var(--ease-standard);
+  }
+
+  .hdr.scrolled {
+    padding: 12px 0;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 24px -8px rgba(11, 47, 91, 0.08);
+  }
+
+  .hdr-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .logo-link {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .ethaqa-logo {
+    display: block;
+    height: 46px;
+    width: auto;
+  }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    gap: var(--space-8);
+    list-style: none;
+    line-height: 1;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nav a,
+  .nav-dropdown-trigger {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-navy);
+    text-decoration: none;
+    letter-spacing: 0.005em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--duration-base) var(--ease-standard);
+    position: relative;
+  }
+
+  .nav a:hover,
+  .nav-dropdown-trigger:hover {
+    color: var(--color-gold);
+  }
+
+  .nav a::after,
+  .nav-dropdown-trigger::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-inline-end: 100%;
+    bottom: -8px;
+    height: 1px;
+    background: var(--color-gold);
+    transition: inset-inline-end 0.4s var(--ease-standard);
+  }
+
+  .nav a:hover::after,
+  .nav-dropdown-trigger:hover::after {
+    inset-inline-end: 0;
+  }
+
+  .nav-dropdown {
+    position: relative;
+  }
+
+  .nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 16px);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    background: var(--color-paper);
+    border: 1px solid var(--border-hairline);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-2) 0;
+    list-style: none;
+    display: none;
+    z-index: var(--z-overlay);
+  }
+
+  .nav-dropdown-trigger[aria-expanded='true'] + .nav-dropdown-menu {
+    display: block;
+  }
+
+  .nav-dropdown-menu li {
+    padding: 0;
+  }
+
+  .nav-dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    color: var(--color-navy);
+  }
+
+  .nav-dropdown-menu a:hover {
+    background: var(--color-mist);
+    color: var(--color-navy);
+  }
+
+  .nav-dropdown-menu a::after {
+    display: none;
+  }
+
+  /* CTA */
+  .hdr-cta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-shrink: 0;
+  }
+
+  .hdr-cta .mono {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-navy);
+    opacity: 0.7;
+  }
+
+  /* Mobile toggle */
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .mobile-menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-navy);
+    transition: transform 0.3s var(--ease-standard);
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    top: 76px;
+    background: var(--color-paper);
+    padding: var(--space-6);
+    overflow-y: auto;
+    z-index: var(--z-overlay);
+  }
+
+  .mobile-menu ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .mobile-menu-group {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-slate);
+    margin-bottom: var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  .mobile-menu a {
+    font-size: 1rem;
+    color: var(--color-navy);
+    text-decoration: none;
+  }
+
+  .mobile-menu-cta {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-hairline);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  @media (max-width: 1100px) {
+    .hdr-inner { gap: var(--space-6); }
+    .nav { gap: var(--space-6); }
+    .hdr-cta .mono { display: none; }
+  }
+
+  @media (max-width: 980px) {
+    .nav { display: none; }
+    .hdr-cta { display: none; }
+    .mobile-menu-toggle { display: flex; }
+  }
+
+  @media (max-width: 720px) {
+    .ethaqa-logo { height: 36px; }
+  }
+
+  @media (max-width: 480px) {
+    .ethaqa-logo { height: 32px; }
+  }
+</style>

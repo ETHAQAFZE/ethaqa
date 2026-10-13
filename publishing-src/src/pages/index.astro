@@ -1,0 +1,330 @@
+---
+// ============================================================
+// Ethaqa Publishing — Homepage
+// Document ID: ETH-PUB-001
+// Version: 1.0.0
+//
+// The first page of the Ethaqa Publishing project.
+// Uses BaseLayout, which composes the header and footer.
+// Content sections (featured books, categories) will be added
+// once the content collections are populated.
+// ============================================================
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// ------------------------------------------------------------
+// Page-level metadata
+// ------------------------------------------------------------
+const title = 'Ethaqa Publishing — Books, Ideas, Knowledge';
+const description =
+  'Ethaqa Publishing publishes books across children\'s, coloring, ' +
+  'business, procurement, AI, and educational categories. Part of ' +
+  'Ethaqa FZE LLC.';
+
+// ------------------------------------------------------------
+// JSON-LD — Organization block for the Publishing business unit
+// ------------------------------------------------------------
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Ethaqa Publishing',
+  parentOrganization: {
+    '@type': 'Organization',
+    name: 'Ethaqa FZE LLC',
+    url: 'https://www.ethaqa.com',
+  },
+  url: 'https://www.ethaqa.com/publishing/',
+  logo: 'https://www.ethaqa.com/assets/brand/ethaqa_horizontal_color.svg',
+  description:
+    'Ethaqa Publishing publishes books across children\'s, coloring, ' +
+    'business, procurement, AI, and educational categories.',
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="website"
+  jsonLd={jsonLd}
+  bodyClass="page-home"
+>
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Ethaqa Publishing · Est. 2026
+      </div>
+
+      <h1 class="hero-title">
+        Books that <span class="accent">engineer</span><br />
+        better thinking.
+      </h1>
+
+      <p class="hero-lead">
+        From children's stories to enterprise procurement guides —
+        we publish work that compounds. Every title is engineered
+        with the same discipline we apply to software.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/publishing/books/" class="btn btn-gold">
+          Browse the Catalogue <span class="arrow">→</span>
+        </a>
+        <a href="/publishing/about/" class="btn btn-outline">
+          About Publishing
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PLACEHOLDER — FEATURED BOOKS
+       Will be populated from the `books` content collection
+       in the next build phase.
+       ============================================================ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Featured</div>
+        <h2 class="section-title">Selected titles</h2>
+        <p class="section-lead">
+          A small, curated selection from the catalogue. Every book is
+          written, edited, and produced to a single standard.
+        </p>
+      </div>
+
+      <div class="placeholder-note">
+        <p>
+          <strong>Content coming soon.</strong><br />
+          The books collection is scaffolded and ready.
+          Titles will appear here once content is authored in
+          <code>src/content/books/</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PLACEHOLDER — CATEGORIES
+       Will be populated from the `categories` content collection.
+       ============================================================ -->
+  <section class="section section-mist">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Categories</div>
+        <h2 class="section-title">Browse by theme</h2>
+        <p class="section-lead">
+          Children's books, coloring books, business guides, procurement
+          references, AI primers, and educational workbooks.
+        </p>
+      </div>
+
+      <div class="placeholder-note">
+        <p>
+          <strong>Categories coming soon.</strong><br />
+          Category pages will be generated from
+          <code>src/content/categories/</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ============================================================
+     HERO
+     ============================================================ */
+
+  .hero {
+    background: var(--color-navy);
+    color: var(--color-paper);
+    padding: 180px 0 120px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    inset-inline-end: -10%;
+    width: 70%;
+    height: 140%;
+    background: radial-gradient(circle, rgba(184, 147, 63, 0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero .wrap {
+    position: relative;
+    z-index: var(--z-base);
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 40px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 36px;
+  }
+
+  .hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    box-shadow: 0 0 12px var(--color-gold);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    color: var(--color-paper);
+    margin-bottom: 28px;
+    max-width: 18ch;
+  }
+
+  .hero-title .accent {
+    color: var(--color-gold);
+  }
+
+  .hero-lead {
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 60ch;
+    line-height: 1.65;
+    margin-bottom: 44px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  /* ============================================================
+     SECTIONS
+     ============================================================ */
+
+  .section {
+    padding: clamp(100px, 12vw, 160px) 0;
+    position: relative;
+  }
+
+  .section-mist {
+    background: var(--color-mist);
+  }
+
+  .section-head {
+    max-width: 720px;
+    margin-bottom: 60px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--type-mono);
+    font-weight: 500;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-navy);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: var(--color-navy);
+    opacity: 0.5;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-navy);
+    margin-bottom: 20px;
+    max-width: 22ch;
+  }
+
+  .section-lead {
+    font-size: clamp(1.02rem, 1.3vw, 1.15rem);
+    color: #2A3441;
+    line-height: 1.65;
+    max-width: 62ch;
+  }
+
+  /* ============================================================
+     PLACEHOLDER
+     Temporary block while content is being authored.
+     ============================================================ */
+
+  .placeholder-note {
+    border: 1px dashed rgba(11, 47, 91, 0.2);
+    background: var(--color-paper);
+    padding: 40px 36px;
+    max-width: 640px;
+  }
+
+  .placeholder-note p {
+    font-size: 0.95rem;
+    color: #2A3441;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .placeholder-note strong {
+    color: var(--color-navy);
+    font-weight: 600;
+  }
+
+  .placeholder-note code {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--color-mist);
+    padding: 2px 6px;
+    color: var(--color-navy);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+
+  @media (max-width: 720px) {
+    .hero {
+      padding: 140px 0 80px;
+    }
+  }
+</style>

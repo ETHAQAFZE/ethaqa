@@ -1,0 +1,193 @@
+---
+// ============================================================
+// Ethaqa Publishing — Base Layout
+// Document ID: ETH-PUB-001
+// Version: 1.0.0
+//
+// The global page shell for every page in the Publishing
+// project. Wraps content in <html>, <head>, and <body>, and
+// composes the shared components: SEO, SiteHeader, SiteFooter.
+//
+// Every page extends this layout. No page renders raw <html>
+// or <body> tags of its own.
+// ============================================================
+
+import '@design-system/tokens.css';
+import SEO from '../components/SEO.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+// ------------------------------------------------------------
+// Props
+// ------------------------------------------------------------
+interface Props {
+  /** Page title — required */
+  title: string;
+
+  /** Page description — required */
+  description: string;
+
+  /** Optional Open Graph image */
+  ogImage?: string;
+
+  /** Optional Open Graph type — "website" (default), "book", "article" */
+  ogType?: string;
+
+  /** Optional canonical override */
+  canonical?: string;
+
+  /** Optional noindex flag */
+  noindex?: boolean;
+
+  /** Optional JSON-LD payload */
+    jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+
+  /** Optional body class for page-specific styling */
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  ogImage,
+  ogType,
+  canonical,
+  noindex,
+  jsonLd,
+  bodyClass = '',
+} = Astro.props;
+
+// ------------------------------------------------------------
+// The language is always English at v1.0.0.
+// When Arabic is added in v1.1.0+, this becomes dynamic.
+// ------------------------------------------------------------
+const lang = 'en';
+---
+
+<!DOCTYPE html>
+<html lang={lang} dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <SEO
+    title={title}
+    description={description}
+    ogImage={ogImage}
+    ogType={ogType}
+    canonical={canonical}
+    noindex={noindex}
+    jsonLd={jsonLd}
+  />
+
+  <!-- Fonts — self-hosted via Fontsource, subset, preload critical weights -->
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    href="/publishing/_astro/poppins-600.woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    href="/publishing/_astro/inter-400.woff2"
+    crossorigin
+  />
+
+  <!-- Favicon package -->
+  <link rel="icon" href="/assets/brand/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="/assets/brand/ethaqa_icon_color.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/brand/favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0B2F5B" />
+</head>
+
+<body class={bodyClass}>
+  <SiteHeader />
+
+  <main id="main-content">
+    <slot />
+  </main>
+
+  <SiteFooter />
+</body>
+</html>
+
+<style is:global>
+  /* ============================================================
+     Global base styles.
+     Scoped to the layout so every page inherits them.
+     ============================================================ */
+
+  /* Reset — the design system expects a clean slate */
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--leading-heading);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-standard);
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  /* Focus states — accessible and consistent */
+  *:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+
+  /* Container — used by every section */
+  .wrap {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--container-padding);
+    position: relative;
+    z-index: var(--z-base);
+  }
+
+  @media (max-width: 720px) {
+    .wrap {
+      padding-inline: var(--container-padding-sm);
+    }
+  }
+
+  /* Skip-link target offset — accounts for the fixed header */
+  #main-content {
+    scroll-margin-top: 100px;
+  }
+</style>

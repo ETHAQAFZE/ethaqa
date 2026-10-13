@@ -1,0 +1,133 @@
+---
+// ============================================================
+// Ethaqa Publishing — SEO Component
+// Document ID: ETH-PUB-001
+// Version: 1.0.0
+//
+// Renders the <head> metadata for a page. Every page in the
+// Publishing project uses this component.
+//
+// Canonical URLs are always generated from Astro.site and
+// Astro.url.pathname. They are never hand-authored. This is a
+// rule from ETH-IA-001 that this component enforces.
+// ============================================================
+
+interface JsonLdObject {
+  [key: string]: unknown;
+}
+
+interface Props {
+  /** Page title — appears in <title> and og:title */
+  title: string;
+
+  /** Page description — appears in meta description, og:description, twitter:description */
+  description: string;
+
+  /** Open Graph image URL — absolute or root-relative. Defaults to corporate OG image. */
+  ogImage?: string;
+
+  /** Open Graph type — "website" (default), "article", "book", "product" */
+  ogType?: string;
+
+  /** Canonical URL — auto-derived if not provided */
+  canonical?: string;
+
+  /** If true, adds <meta name="robots" content="noindex, nofollow"> */
+  noindex?: boolean;
+
+  /** One or more JSON-LD objects to render as structured data */
+  jsonLd?: JsonLdObject | JsonLdObject[];
+
+  /** Site name for og:site_name — defaults to "Ethaqa Publishing" */
+  siteName?: string;
+
+  /** Locale — defaults to "en_US" */
+  locale?: string;
+}
+
+const {
+  title,
+  description,
+  ogImage,
+  ogType = 'website',
+  canonical,
+  noindex = false,
+  jsonLd,
+  siteName = 'Ethaqa Publishing',
+  locale = 'en_US',
+} = Astro.props;
+
+// ------------------------------------------------------------
+// Canonical URL — generated from Astro.site + current path
+// ------------------------------------------------------------
+const site = Astro.site ?? new URL('https://www.ethaqa.com');
+const pathname = Astro.url.pathname;
+
+// Ensure trailing slash consistency (per ETH-IA-001)
+const normalizedPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
+const canonicalUrl = canonical ?? new URL(normalizedPath, site).toString();
+
+// ------------------------------------------------------------
+// Open Graph image — absolute URL
+// ------------------------------------------------------------
+const defaultOgImage = new URL('/assets/brand/og-image.png', site).toString();
+const resolvedOgImage = ogImage
+  ? new URL(ogImage, site).toString()
+  : defaultOgImage;
+
+// ------------------------------------------------------------
+// JSON-LD — normalize to array
+// ------------------------------------------------------------
+const jsonLdArray: JsonLdObject[] = jsonLd
+  ? Array.isArray(jsonLd)
+    ? jsonLd
+    : [jsonLd]
+  : [];
+
+// ------------------------------------------------------------
+// Robots directive
+// ------------------------------------------------------------
+const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large';
+---
+
+<!-- ============================================================
+     Primary meta
+     ============================================================ -->
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content={robotsContent} />
+
+<!-- ============================================================
+     Open Graph
+     ============================================================ -->
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={resolvedOgImage} />
+<meta property="og:image:secure_url" content={resolvedOgImage} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={locale} />
+
+<!-- ============================================================
+     Twitter Cards
+     ============================================================ -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={resolvedOgImage} />
+
+<!-- ============================================================
+     Structured Data (JSON-LD)
+     Each object is emitted as a separate script block.
+     ============================================================ -->
+{jsonLdArray.map((obj) => (
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(obj)}
+  />
+))}

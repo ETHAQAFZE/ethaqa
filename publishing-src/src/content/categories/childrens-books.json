@@ -1,0 +1,8 @@
+{
+  "name": "Children's Books",
+  "slug": "childrens-books",
+  "description": "Stories and picture books for young readers. Every title is written to spark curiosity, build empathy, and give children a reason to return to the page.",
+  "color": "children",
+  "featured": true,
+  "order": 1
+}

@@ -91,12 +91,25 @@ The corporate site uses Google Analytics 4 (GA4). Adding Cloudflare Web Analytic
 
 This extension is documented here so it's not forgotten.
 
-## 11. Version History
+## 11. CORS Policy
+
+The site uses Cloudflare's default `Access-Control-Allow-Origin: *` header.
+
+Justification:
+- No authentication
+- No cookies or session state
+- All content is public by design
+- No cross-origin API endpoints
+
+If the site later exposes authenticated or user-specific content,
+tighten this to `Access-Control-Allow-Origin: https://www.ethaqa.com`.
+
+## 12. Version History
 
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | October 2026 | Initial standard |
 
-## 12. Approval
+## 13. Approval
 
 Signature: ______________________  Date: __________

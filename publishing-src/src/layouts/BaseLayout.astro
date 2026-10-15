@@ -26,12 +26,16 @@ import SiteFooter from '../components/SiteFooter.astro';
 // ------------------------------------------------------------
 // Props
 // ------------------------------------------------------------
+interface JsonLdObject {
+  [key: string]: unknown;
+}
+
 interface Props {
   title: string;
   description?: string;
   ogType?: string;
   ogImage?: string;
-  jsonLd?: Record<string, unknown> | null;
+  jsonLd?: JsonLdObject | JsonLdObject[];
   bodyClass?: string;
   canonical?: string;
   noindex?: boolean;
@@ -74,7 +78,7 @@ const lang = 'en';
     jsonLd={jsonLd}
   />
 
-  <!-- Fonts â€” self-hosted via Fontsource, subset, preload critical weights -->
+  <!-- Fonts ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â self-hosted via Fontsource, subset, preload critical weights -->
   <link
     rel="preload"
     as="font"
@@ -116,7 +120,7 @@ const lang = 'en';
      Scoped to the layout so every page inherits them.
      ============================================================ */
 
-  /* Reset â€” the design system expects a clean slate */
+  /* Reset ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the design system expects a clean slate */
   *,
   *::before,
   *::after {
@@ -157,14 +161,14 @@ const lang = 'en';
     display: block;
   }
 
-  /* Focus states â€” accessible and consistent */
+  /* Focus states ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â accessible and consistent */
   *:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
     border-radius: var(--radius-1);
   }
 
-  /* Container â€” used by every section */
+  /* Container ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â used by every section */
   .wrap {
     width: 100%;
     max-width: var(--container-wide);
@@ -180,7 +184,7 @@ const lang = 'en';
     }
   }
 
-  /* Skip-link target offset â€” accounts for the fixed header */
+  /* Skip-link target offset ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â accounts for the fixed header */
   #main-content {
     scroll-margin-top: 100px;
   }

@@ -14,7 +14,7 @@
 // ============================================================
 
 import { execSync } from 'node:child_process';
-import { rmSync, mkdirSync, cpSync, existsSync } from 'node:fs';
+import { rmSync, mkdirSync, cpSync, existsSync, writeFileSync } from 'node:fs';
 
 // ------------------------------------------------------------
 // Config
@@ -105,6 +105,39 @@ for (const item of OPTIONAL) {
 log('');
 
 // ------------------------------------------------------------
+// 2b. Generate root sitemap.xml (if not present as static file)
+// ------------------------------------------------------------
+
+if (!existsSync('dist/sitemap.xml')) {
+  log('▸ Generating root sitemap.xml');
+
+  const siteUrl = 'https://ethaqa.com';
+  const today = new Date().toISOString().split('T')[0];
+
+  const corporatePages = [
+    { loc: '/',              priority: '1.0', changefreq: 'weekly'  },
+    { loc: '/privacy.html',  priority: '0.3', changefreq: 'yearly'  },
+    { loc: '/terms.html',    priority: '0.3', changefreq: 'yearly'  },
+    { loc: '/cookies.html',  priority: '0.3', changefreq: 'yearly'  },
+    { loc: '/copyright.html',priority: '0.3', changefreq: 'yearly'  },
+  ];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${corporatePages.map(p => `  <url>
+    <loc>${siteUrl}${p.loc}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+  </url>`).join('\n')}
+</urlset>
+`;
+
+  writeFileSync('dist/sitemap.xml', xml, 'utf8');
+  log('  ✓ dist/sitemap.xml (generated)');
+  log('');
+}
+// ------------------------------------------------------------
 // 3. Build Publishing
 // ------------------------------------------------------------
 
@@ -125,6 +158,18 @@ log('');
 log('▸ Copying Publishing output to dist/publishing');
 
 cpSync(PUBLISHING_OUTPUT, PUBLISHING_DEPLOY, { recursive: true });
+// Guard: ensure no source files leaked into the deployed output
+for (const banned of [
+  'package.json',
+  'package-lock.json',
+  'tsconfig.json',
+  'astro.config.mjs',
+  '.env',
+]) {
+  if (existsSync(`dist/publishing/${banned}`)) {
+    fail(`Source file leaked into output: ${banned}`);
+  }
+}
 
 if (!existsSync(`${PUBLISHING_DEPLOY}/index.html`)) {
   fail('Publishing homepage not found in build output');

@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://ethaqa.com/sitemap.xml
+Sitemap: https://ethaqa.com/publishing/sitemap-index.xml

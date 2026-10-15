@@ -1,0 +1,170 @@
+---
+// ============================================================
+// Ethaqa Publishing — Page Hero
+// Shared hero band with breadcrumbs for interior pages.
+// Used by books/, books/[slug], categories/, authors/.
+// ============================================================
+
+interface Breadcrumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  breadcrumbs: Breadcrumb[];
+  eyebrow: string;
+  title: string;
+  accent?: string;
+  lead?: string;
+}
+
+const { breadcrumbs, eyebrow, title, accent, lead } = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="wrap">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        {breadcrumbs.map((crumb, i) => (
+          <li aria-current={i === breadcrumbs.length - 1 ? 'page' : undefined}>
+            {crumb.href && i < breadcrumbs.length - 1 ? (
+              <a href={crumb.href}>{crumb.label}</a>
+            ) : (
+              <span>{crumb.label}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <div class="eyebrow">{eyebrow}</div>
+    <h1 class="page-title">
+      {title}
+      {accent && <span class="accent">{accent}</span>}
+    </h1>
+    {lead && <p class="page-lead">{lead}</p>}
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    background: var(--color-navy);
+    color: var(--color-paper);
+    padding: 160px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .page-hero .wrap {
+    position: relative;
+    z-index: var(--z-base);
+  }
+
+  .breadcrumbs {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 44px;
+  }
+
+  .breadcrumbs ol {
+    list-style: none;
+    display: flex;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    flex-wrap: wrap;
+  }
+
+  .breadcrumbs li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    content: '›';
+    margin-inline-start: 12px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .breadcrumbs a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-standard);
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-gold);
+  }
+
+  .breadcrumbs [aria-current='page'] {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--type-mono);
+    font-weight: 500;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--color-gold);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: var(--color-gold);
+    opacity: 0.5;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    color: var(--color-paper);
+    margin-bottom: 26px;
+    max-width: 18ch;
+  }
+
+  .page-title .accent {
+    color: var(--color-gold);
+  }
+
+  .page-lead {
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 62ch;
+    line-height: 1.65;
+  }
+
+  @media (prefers-contrast: more) {
+    .breadcrumbs ol {
+      color: rgba(255, 255, 255, 0.95);
+    }
+    .breadcrumbs a {
+      color: rgba(255, 255, 255, 1);
+    }
+  }
+</style>

@@ -1,6 +1,6 @@
 ---
 // ============================================================
-// Ethaqa Publishing — Base Layout
+// Ethaqa Publishing - Base Layout
 // Document ID: ETH-PUB-001
 // Version: 1.0.0
 //
@@ -12,6 +12,12 @@
 // or <body> tags of its own.
 // ============================================================
 
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
 import '../../../assets/css/tokens.css';
 import SEO from '../components/SEO.astro';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -21,41 +27,29 @@ import SiteFooter from '../components/SiteFooter.astro';
 // Props
 // ------------------------------------------------------------
 interface Props {
-  /** Page title — required */
   title: string;
-
-  /** Page description — required */
-  description: string;
-
-  /** Optional Open Graph image */
-  ogImage?: string;
-
-  /** Optional Open Graph type — "website" (default), "book", "article" */
+  description?: string;
   ogType?: string;
-
-  /** Optional canonical override */
-  canonical?: string;
-
-  /** Optional noindex flag */
-  noindex?: boolean;
-
-  /** Optional JSON-LD payload */
-    jsonLd?: Record<string, unknown> | Record<string, unknown>[];
-
-  /** Optional body class for page-specific styling */
+  ogImage?: string;
+  jsonLd?: Record<string, unknown> | null;
   bodyClass?: string;
+  canonical?: string;
+  noindex?: boolean;
 }
 
 const {
   title,
-  description,
+  description = '',
+  ogType = 'website',
   ogImage,
-  ogType,
-  canonical,
-  noindex,
   jsonLd,
-  bodyClass = '',
+  bodyClass,
+  canonical,
+  noindex = false,
 } = Astro.props;
+
+// Auto-derive canonical URL if not provided
+const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 
 // ------------------------------------------------------------
 // The language is always English at v1.0.0.
@@ -75,12 +69,12 @@ const lang = 'en';
     description={description}
     ogImage={ogImage}
     ogType={ogType}
-    canonical={canonical}
+    canonical={canonicalURL}
     noindex={noindex}
     jsonLd={jsonLd}
   />
 
-  <!-- Fonts — self-hosted via Fontsource, subset, preload critical weights -->
+  <!-- Fonts â€” self-hosted via Fontsource, subset, preload critical weights -->
   <link
     rel="preload"
     as="font"
@@ -122,7 +116,7 @@ const lang = 'en';
      Scoped to the layout so every page inherits them.
      ============================================================ */
 
-  /* Reset — the design system expects a clean slate */
+  /* Reset â€” the design system expects a clean slate */
   *,
   *::before,
   *::after {
@@ -163,14 +157,14 @@ const lang = 'en';
     display: block;
   }
 
-  /* Focus states — accessible and consistent */
+  /* Focus states â€” accessible and consistent */
   *:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring-color);
     outline-offset: var(--focus-ring-offset);
     border-radius: var(--radius-1);
   }
 
-  /* Container — used by every section */
+  /* Container â€” used by every section */
   .wrap {
     width: 100%;
     max-width: var(--container-wide);
@@ -186,7 +180,7 @@ const lang = 'en';
     }
   }
 
-  /* Skip-link target offset — accounts for the fixed header */
+  /* Skip-link target offset â€” accounts for the fixed header */
   #main-content {
     scroll-margin-top: 100px;
   }

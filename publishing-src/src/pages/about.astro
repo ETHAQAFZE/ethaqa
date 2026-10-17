@@ -1,0 +1,376 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+
+const title = 'About Ethaqa Publishing';
+const description = 'Publishing knowledge that inspires, educates, and empowers every generation. A publishing division of Ethaqa FZE LLC.';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  bodyClass="page-about"
+>
+  <PageHero
+    breadcrumbs={[]}
+    eyebrow="Our Story"
+    title="About Ethaqa Publishing"
+    lead="Publishing knowledge that inspires, educates, and empowers every generation."
+  />
+
+  <section class="section">
+    <div class="container about-container">
+      
+      <!-- Our Story & Mission -->
+      <div class="about-block">
+        <h2 class="section-title">Our Story</h2>
+        <p>Ethaqa Publishing was founded to create high-quality educational and creative publications. We focus on lasting value rather than mass-produced content, committing ourselves to well-researched, thoughtfully designed books that enrich lives.</p>
+        
+        <div class="mission-quote">
+          <p>Our Mission: To create trusted books that inspire curiosity, creativity, lifelong learning, and professional excellence.</p>
+        </div>
+      </div>
+
+      <!-- What We Publish -->
+      <div class="about-block">
+        <h2 class="section-title">What We Publish</h2>
+        <div class="category-grid">
+          <div class="category-card">
+            <h3>Children's Books</h3>
+            <ul>
+              <li>Coloring books</li>
+              <li>Activity books</li>
+              <li>Early learning</li>
+              <li>Storybooks</li>
+            </ul>
+          </div>
+          <div class="category-card">
+            <h3>Professional & Business</h3>
+            <ul>
+              <li>Procurement</li>
+              <li>Supply Chain</li>
+              <li>Leadership</li>
+              <li>Operations</li>
+              <li>AI for Business</li>
+            </ul>
+          </div>
+          <div class="category-card">
+            <h3>Education</h3>
+            <ul>
+              <li>Workbooks</li>
+              <li>Reference Guides</li>
+              <li>Skill Development</li>
+            </ul>
+          </div>
+          <div class="category-card">
+            <h3>Adult Creativity</h3>
+            <ul>
+              <li>Adult coloring books</li>
+              <li>Journals & Planners</li>
+              <li>Puzzle books</li>
+              <li>Mindfulness books</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Editorial Standards & Process -->
+      <div class="about-block">
+        <h2 class="section-title">Editorial Standards</h2>
+        <p>We differentiate ourselves from self-publishers through rigorous standards:</p>
+        <ul class="check-list">
+          <li>Accuracy and originality</li>
+          <li>Professional editing and high-quality illustration</li>
+          <li>Durable, premium design</li>
+          <li>Ethical AI use where applicable</li>
+          <li>Respect for copyright and intellectual property</li>
+        </ul>
+      </div>
+
+      <div class="about-block">
+        <h2 class="section-title">Our Publishing Process</h2>
+        <div class="process-steps">
+          <div class="step">Idea</div>
+          <div class="step-arrow">↓</div>
+          <div class="step">Research</div>
+          <div class="step-arrow">↓</div>
+          <div class="step">Writing</div>
+          <div class="step-arrow">↓</div>
+          <div class="step">Editing</div>
+          <div class="step-arrow">↓</div>
+          <div class="step">Design</div>
+          <div class="step-arrow">↓</div>
+          <div class="step">Publication</div>
+        </div>
+      </div>
+
+      <!-- Authors & Vision -->
+      <div class="about-block">
+        <h2 class="section-title">Our Authors</h2>
+        <p>Ethaqa collaborates with authors, illustrators, subject-matter experts, educators, and creative professionals. As our catalogue grows, we remain dedicated to highlighting the brilliant minds behind our books.</p>
+      </div>
+
+      <div class="about-block">
+        <h2 class="section-title">Why Readers Choose Ethaqa</h2>
+        <div class="benefits-grid">
+          <div class="benefit">Premium quality</div>
+          <div class="benefit">Educational value</div>
+          <div class="benefit">Professional design</div>
+          <div class="benefit">Trusted content</div>
+          <div class="benefit">Global availability</div>
+          <div class="benefit">Long-term relevance</div>
+        </div>
+      </div>
+
+      <div class="about-block">
+        <h2 class="section-title">Our Vision</h2>
+        <p class="vision-statement">To become a globally recognized independent publisher producing trusted books that educate, inspire, and enrich readers of all ages.</p>
+      </div>
+
+      <!-- Parent Company -->
+      <div class="about-block company-block">
+        <h2 class="section-title">Part of Ethaqa</h2>
+        <p>Ethaqa Publishing is the publishing division of <strong>Ethaqa FZE LLC</strong>, a UAE-based enterprise focused on technology, procurement, consulting, and knowledge creation.</p>
+      </div>
+
+      <!-- CTA -->
+      <div class="about-cta">
+        <h2>Explore Our Catalogue</h2>
+        <div class="cta-buttons">
+          <a href="/publishing/books/" class="btn btn-primary">Browse Books</a>
+          <a href="/publishing/authors/luma-wren/" class="btn btn-outline">Meet Our Authors</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ============================================================
+     LAYOUT
+     ============================================================ */
+  .section {
+    padding: clamp(60px, 8vw, 100px) 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .about-container {
+    max-width: 900px; /* Narrower for better reading length */
+  }
+
+  .about-block {
+    margin-bottom: 64px;
+  }
+
+  .about-block:last-of-type {
+    margin-bottom: 0;
+  }
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  .about-block p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-soft);
+    margin-bottom: 24px;
+  }
+
+  .mission-quote {
+    background: var(--gray-light);
+    border-left: 4px solid var(--accent);
+    padding: 32px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 32px 0;
+  }
+
+  .mission-quote p {
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--primary);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .vision-statement {
+    font-size: 1.3rem;
+    color: var(--primary);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     CATEGORY GRID (What We Publish)
+     ============================================================ */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  .category-card {
+    background: white;
+    border: 1px solid var(--gray-mid);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .category-card h3 {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+  }
+
+  .category-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .category-card li {
+    color: var(--text-soft);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--gray-light);
+  }
+
+  .category-card li:last-child {
+    border-bottom: none;
+  }
+
+  /* ============================================================
+     LISTS & PROCESS
+     ============================================================ */
+  .check-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .check-list li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+    color: var(--text-soft);
+  }
+
+  .check-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--gray-light);
+    padding: 40px;
+    border-radius: var(--radius);
+  }
+
+  .step {
+    background: white;
+    padding: 12px 32px;
+    border-radius: 100px;
+    font-weight: 700;
+    color: var(--primary);
+    border: 2px solid var(--accent);
+    box-shadow: var(--shadow-sm);
+    font-size: 1.1rem;
+  }
+
+  .step-arrow {
+    font-size: 1.5rem;
+    color: var(--gray-mid);
+    margin: 8px 0;
+  }
+
+  /* ============================================================
+     BENEFITS
+     ============================================================ */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .benefit {
+    background: rgba(0, 168, 181, 0.08);
+    color: var(--primary);
+    padding: 16px;
+    border-radius: var(--radius);
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     COMPANY & CTA
+     ============================================================ */
+  .company-block {
+    background: var(--primary);
+    color: white;
+    padding: 48px;
+    border-radius: var(--radius);
+  }
+
+  .company-block .section-title {
+    color: white;
+    border-bottom-color: rgba(255,255,255,0.2);
+  }
+
+  .company-block p {
+    color: #cbdae9;
+  }
+
+  .company-block strong {
+    color: white;
+  }
+
+  .about-cta {
+    text-align: center;
+    padding: 64px 24px;
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    margin-top: 64px;
+  }
+
+  .about-cta h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 32px;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>

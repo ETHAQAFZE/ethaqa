@@ -1,0 +1,221 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { Image } from 'astro:assets';
+import { getBooksByCategory } from '../../lib/books';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+// ------------------------------------------------------------
+// Dynamic route: one page per category
+// ------------------------------------------------------------
+export async function getStaticPaths() {
+  const categories = await getCollection('categories');
+  return categories.map((category) => ({
+    params: { slug: category.id },
+    props: { category },
+  }));
+}
+
+interface Props {
+  category: CollectionEntry<'categories'>;
+}
+
+const { category } = Astro.props;
+const categoryInfo = category.data;
+
+// Fetch all books in this category
+const books = await getBooksByCategory(category.id);
+
+// ------------------------------------------------------------
+// SEO & Headers
+// ------------------------------------------------------------
+const title = `${categoryInfo.name} — Ethaqa Publishing`;
+const description = categoryInfo.description || `Browse our collection of ${categoryInfo.name.toLowerCase()}.`;
+
+const breadcrumbs = [
+  { label: 'Categories', href: '/publishing/categories/' },
+  { label: categoryInfo.name },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  bodyClass="page-category-detail"
+>
+  <PageHero
+    breadcrumbs={breadcrumbs}
+    eyebrow="Category"
+    title={categoryInfo.name}
+    lead={categoryInfo.description}
+  />
+
+  <section class="section">
+    <div class="container">
+      
+      <div class="category-header">
+        <h2 class="section-title">Books in {categoryInfo.name}</h2>
+        <span class="book-count">{books.length} {books.length === 1 ? 'title' : 'titles'}</span>
+      </div>
+
+      {books.length === 0 ? (
+        <div class="empty-state">
+          <p>No books found in this category yet.</p>
+          <a href="/publishing/books/" class="btn btn-primary">Browse All Books</a>
+        </div>
+      ) : (
+        <ul class="book-grid">
+          {books.map((book) => (
+            <li class="book-card">
+              <a href={`/publishing/books/${book.id}/`} class="book-card-link">
+                <div class="book-cover-wrapper">
+                  <Image
+                    src={book.data.cover.src}
+                    alt={book.data.cover.alt}
+                    widths={[300, 600]}
+                    sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+                    class="book-cover-image"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="book-card-content">
+                  <h3 class="book-title">{book.data.title}</h3>
+                  {book.data.subtitle && (
+                    <p class="book-subtitle">{book.data.subtitle}</p>
+                  )}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ============================================================
+     LAYOUT & HEADER
+     ============================================================ */
+  .section {
+    padding: clamp(60px, 8vw, 100px) 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+  }
+
+  .book-count {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  /* ============================================================
+     GRID & CARDS
+     ============================================================ */
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 40px 32px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .book-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .book-cover-wrapper {
+    position: relative;
+    aspect-ratio: 8.5 / 8.5;
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .book-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .book-card-link:hover .book-cover-wrapper {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .book-card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .book-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    margin-bottom: 12px;
+    flex-grow: 1;
+  }
+
+  /* ============================================================
+     EMPTY STATE
+     ============================================================ */
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    border: 1px dashed var(--gray-mid);
+  }
+
+  .empty-state p {
+    color: var(--text-soft);
+    margin-bottom: 24px;
+    font-size: 1.1rem;
+  }
+</style>

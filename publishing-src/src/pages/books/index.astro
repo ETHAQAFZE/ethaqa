@@ -1,0 +1,315 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { Image } from 'astro:assets';
+import { getPublishedBooks } from '../../lib/books';
+import { getEntry } from 'astro:content';
+
+// Fetch published books
+const books = await getPublishedBooks();
+
+// Resolve authors for every book so we can display them on the cards
+const booksWithAuthors = await Promise.all(
+  books.map(async (book) => {
+    const authors = await Promise.all(
+      book.data.authors.map((a) => getEntry(a))
+    );
+    return {
+      ...book,
+      resolvedAuthors: authors.filter(Boolean).map(a => a.data.name),
+    };
+  })
+);
+
+const title = 'Books — Ethaqa Publishing';
+const description = 'Browse the catalog of children\'s books and coloring books published by Ethaqa Publishing.';
+
+const breadcrumbs = [
+  { label: 'Books' },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  bodyClass="page-books-index"
+>
+  <PageHero
+    breadcrumbs={breadcrumbs}
+    eyebrow="Catalog"
+    title="Books"
+    lead="Discover our collection of beautifully illustrated children's books and activity books."
+  />
+
+  <section class="section">
+    <div class="container">
+      
+      <!-- Search/Filter Bar -->
+      <div class="catalog-controls">
+        <input 
+          type="search" 
+          id="book-search" 
+          placeholder="Search by title or author..." 
+          aria-label="Search books"
+        />
+        <div class="catalog-count">
+          <span id="visible-count">{booksWithAuthors.length}</span> books
+        </div>
+      </div>
+
+      <!-- Empty State (if no books exist) -->
+      {booksWithAuthors.length === 0 && (
+        <div class="empty-state">
+          <h2>No books published yet</h2>
+          <p>Check back soon for new releases from Ethaqa Publishing.</p>
+        </div>
+      )}
+
+      <!-- Books Grid -->
+      <ul class="book-grid" id="book-grid">
+        {booksWithAuthors.map((book) => (
+          <li class="book-card" data-search={`${book.data.title} ${book.resolvedAuthors.join(' ')} ${book.data.keywords.join(' ')}`.toLowerCase()}>
+            <a href={`/publishing/books/${book.id}/`} class="book-card-link">
+              <div class="book-cover-wrapper">
+                <Image
+                  src={book.data.cover.src}
+                  alt={book.data.cover.alt}
+                  widths={[300, 600]}
+                  sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+                  class="book-cover-image"
+                  loading="lazy"
+                />
+                {book.data.featured && (
+                  <span class="badge-featured">Featured</span>
+                )}
+              </div>
+              <div class="book-card-content">
+                <h2 class="book-title">{book.data.title}</h2>
+                {book.data.subtitle && (
+                  <p class="book-subtitle">{book.data.subtitle}</p>
+                )}
+                <p class="book-author">
+                  by {book.resolvedAuthors.join(' & ')}
+                </p>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- No Results State (for search) -->
+      <div id="no-results" class="empty-state" style="display: none;">
+        <h2>No books found</h2>
+        <p>Try adjusting your search terms.</p>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Client-side search filter
+  const searchInput = document.getElementById('book-search') as HTMLInputElement;
+  const bookGrid = document.getElementById('book-grid');
+  const noResults = document.getElementById('no-results');
+  const visibleCount = document.getElementById('visible-count');
+
+  if (searchInput && bookGrid) {
+    const cards = Array.from(bookGrid.querySelectorAll('.book-card')) as HTMLElement[];
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      let count = 0;
+
+      cards.forEach((card) => {
+        const searchData = card.getAttribute('data-search') || '';
+        
+        if (query === '' || searchData.includes(query)) {
+          card.style.display = '';
+          count++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (visibleCount) visibleCount.textContent = count.toString();
+
+      if (noResults) {
+        if (count === 0 && query !== '') {
+          noResults.style.display = 'block';
+        } else {
+          noResults.style.display = 'none';
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  /* ============================================================
+     LAYOUT & CONTROLS
+     ============================================================ */
+  .section {
+    padding: clamp(60px, 8vw, 100px) 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .catalog-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  @media (min-width: 768px) {
+    .catalog-controls {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .catalog-controls input {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 1px solid var(--gray-mid);
+    border-radius: 100px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .catalog-controls input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 168, 181, 0.15);
+  }
+
+  .catalog-count {
+    font-size: 0.95rem;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  /* ============================================================
+     GRID & CARDS
+     ============================================================ */
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 40px 32px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .book-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .book-cover-wrapper {
+    position: relative;
+    aspect-ratio: 8.5 / 8.5; /* Match your 8.5x8.5 trim size */
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* If your book isn't perfectly square, this fallback ensures it still looks good */
+  .book-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .book-card-link:hover .book-cover-wrapper {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .badge-featured {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 100px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .book-card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .book-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    margin-bottom: 12px;
+    flex-grow: 1;
+  }
+
+  .book-author {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: auto;
+  }
+
+  /* ============================================================
+     EMPTY STATES
+     ============================================================ */
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    border: 1px dashed var(--gray-mid);
+  }
+
+  .empty-state h2 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    color: var(--text-soft);
+  }
+</style>

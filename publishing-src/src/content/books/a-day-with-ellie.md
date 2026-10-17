@@ -1,35 +1,38 @@
 ---
-title: A Day With Ellie
-subtitle: A Sweet Preschool Coloring Book for Ages 2–5
-slug: a-day-with-ellie
+title: "Ellie Little Adventures: Book One"
+subtitle: "A Fun Toddler Coloring Book"
+slug: a-day-with-ellie # Keeping the slug so the URL doesn't break
 authors:
   - luma-wren
 categories:
   - coloring-books
-description: "Spend a joyful day with Ellie through 30 adorable preschool coloring pages featuring everyday adventures."
-shortDescription: "Cute preschool coloring book."
+description: "Join Ellie on a fun-filled coloring adventure! With 40 adorable pages of everyday adventures, this toddler coloring book is designed to spark imagination and creativity in little ones."
+shortDescription: "A fun 40-page toddler coloring book featuring Ellie."
 cover:
   src: ../../assets/covers/a-day-with-ellie/front.png
-  alt: A Day With Ellie cover
-isbn13: "9780306406157"
-publicationDate: 2026-09-15
-language: en
-format:
-  - paperback
-  - ebook
-pageCount: 32
+  alt: The cover of Ellie Little Adventures, showing a cartoon elephant in a garden.
+isbn13: "" # Leave blank if you only have the ASIN right now
+asin: "B0HN7P1ZJJ"
+pageCount: 40
+trimSize: "8.5 x 8.5 in"
 ageRange:
   min: 2
   max: 5
 publisher: Ethaqa FZE LLC
 imprint: Ethaqa Publishing
+format:
+  - paperback
+  - ebook
+publicationDate: 2026-10-16 # Based on KDP "Submitted on"
+language: en
 keywords:
-  - coloring book
-  - preschool
-  - toddlers
-  - ages 2-5
+  - toddler coloring book
+  - preschool coloring
+  - kids coloring book
+  - elephant coloring book
+  - childrens book
 featured: true
 status: published
+purchaseLinks:
+  amazon: "https://www.amazon.com/dp/B0HN7P1ZJJ"
 ---
-
-A Day With Ellie is a preschool coloring book featuring simple, bold illustrations that follow Ellie through a cheerful day from morning to bedtime. Designed for children aged 2–5, each page encourages creativity while helping develop fine motor skills and hand-eye coordination. Large illustrations, clean outlines, and familiar daily activities make this an ideal first coloring book for young children.

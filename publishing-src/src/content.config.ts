@@ -25,6 +25,8 @@ const books = defineCollection({
       alt: z.string(),
     }),
     isbn13: z.string().optional(),
+    asin: z.string().optional(),
+    trimSize: z.string().optional(),
     publicationDate: z.coerce.date(),
     language: z.string().default('en'),
     format: z.array(z.string()).default([]),

@@ -1,14 +1,4 @@
 ---
-// ============================================================
-// Ethaqa Publishing — Book Detail
-// Route: /publishing/books/[slug]/
-// Version: 1.0.0
-//
-// Renders a single published book with full metadata,
-// cover, description, purchase links, and structured data.
-// Draft books are excluded from routing.
-// ============================================================
-
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import { Image } from 'astro:assets';
@@ -35,29 +25,21 @@ const { book } = Astro.props;
 const { data } = book;
 
 // ------------------------------------------------------------
-// Resolve relationships
+// Resolve relationships (Authors & Categories)
 // ------------------------------------------------------------
 const authors = await Promise.all(
   data.authors.map((a) => getEntry(a))
 );
+
 const categories = await Promise.all(
   data.categories.map((c) => getEntry(c))
 );
+
 const primaryCategory = categories[0];
+const purchaseLinks = data.purchaseLinks ?? {};
 
 // ------------------------------------------------------------
-// Format labels for display
-// ------------------------------------------------------------
-const formatLabels: Record<string, string> = {
-  paperback: 'Paperback',
-  hardcover: 'Hardcover',
-  ebook: 'eBook',
-  audiobook: 'Audiobook',
-};
-const formatList = data.format.map((f) => formatLabels[f] ?? f).join(' · ');
-
-// ------------------------------------------------------------
-// Publication date formatting
+// Formatting helpers
 // ------------------------------------------------------------
 const publicationDate = data.publicationDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -65,43 +47,35 @@ const publicationDate = data.publicationDate.toLocaleDateString('en-US', {
   day: 'numeric',
 });
 
-// ------------------------------------------------------------
-// Purchase links, if any
-// ------------------------------------------------------------
-const purchaseLinks = data.purchaseLinks ?? {};
-const purchaseEntries = Object.entries(purchaseLinks).filter(
-  ([, url]) => typeof url === 'string' && url.length > 0
-);
-const purchaseLabels: Record<string, string> = {
-  amazon: 'Amazon',
-  kindle: 'Kindle',
-  noon: 'Noon',
-  barnesAndNoble: 'Barnes & Noble',
-  directPdf: 'Direct PDF',
+const formatLabels: Record<string, string> = {
+  paperback: 'Paperback',
+  ebook: 'eBook',
+  hardcover: 'Hardcover',
 };
 
-// ------------------------------------------------------------
-// Page metadata
-// ------------------------------------------------------------
+const formatList = data.format
+  .map((f) => formatLabels[f] ?? f)
+  .join(' · ');
+
 const title = `${data.title} — Ethaqa Publishing`;
 const description = data.shortDescription || data.description.slice(0, 155);
 
 // ------------------------------------------------------------
-// JSON-LD — Book schema
+// Structured Data (JSON-LD)
 // ------------------------------------------------------------
-const jsonLd = [
+const jsonLd: Record<string, unknown>[] = [
   {
     '@context': 'https://schema.org',
     '@type': 'Book',
     name: data.title,
     ...(data.subtitle && { alternativeHeadline: data.subtitle }),
-    isbn: data.isbn13,
+    isbn: data.asin || data.isbn13, // Prefer ASIN if ISBN is missing
     numberOfPages: data.pageCount,
     inLanguage: data.language,
     bookFormat: 'https://schema.org/Paperback',
     author: authors.map((a) => ({
       '@type': 'Person',
-      name: a.data.name,
+      name: a?.data.name,
     })),
     publisher: {
       '@type': 'Organization',
@@ -110,12 +84,12 @@ const jsonLd = [
     datePublished: data.publicationDate.toISOString().split('T')[0],
     description: data.description,
     image: new URL(data.cover.src.src, Astro.site).toString(),
-    ...(purchaseEntries.length > 0 && {
-      offers: purchaseEntries.map(([, url]) => ({
+    ...(purchaseLinks.amazon && {
+      offers: {
         '@type': 'Offer',
-        url,
+        url: purchaseLinks.amazon,
         availability: 'https://schema.org/InStock',
-      })),
+      },
     }),
   },
   {
@@ -125,18 +99,12 @@ const jsonLd = [
       {
         '@type': 'ListItem',
         position: 1,
-        name: 'Publishing',
-        item: new URL('/publishing/', Astro.site).toString(),
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
         name: 'Books',
         item: new URL('/publishing/books/', Astro.site).toString(),
       },
       {
         '@type': 'ListItem',
-        position: 3,
+        position: 2,
         name: data.title,
         item: new URL(`/publishing/books/${book.id}/`, Astro.site).toString(),
       },
@@ -145,10 +113,9 @@ const jsonLd = [
 ];
 
 // ------------------------------------------------------------
-// Breadcrumbs for PageHero
+// Breadcrumbs for UI
 // ------------------------------------------------------------
 const breadcrumbs = [
-  { label: 'Publishing', href: '/publishing/' },
   { label: 'Books', href: '/publishing/books/' },
   { label: data.title },
 ];
@@ -166,139 +133,141 @@ const breadcrumbs = [
     breadcrumbs={breadcrumbs}
     eyebrow={primaryCategory ? primaryCategory.data.name : 'Book'}
     title={data.title}
-    lead={data.shortDescription}
   />
 
-  <!-- ============================================================
-       BOOK BODY
-       ============================================================ -->
   <section class="section">
-    <div class="wrap book-layout">
+    <div class="container">
+      <div class="book-layout">
+        
+        <!-- Left Column: Cover & Buy Links -->
+        <aside class="book-sidebar">
+          <div class="book-cover-wrapper">
+            <Image
+              src={data.cover.src}
+              alt={data.cover.alt}
+              widths={[400, 800]}
+              sizes="(max-width: 768px) 100vw, 400px"
+              class="book-cover-image"
+              loading="eager"
+            />
+          </div>
 
-      <!-- LEFT: COVER -->
-      <aside class="book-cover-wrap">
-        <div class="book-cover">
-          <Image
-            src={data.cover.src}
-            alt={data.cover.alt}
-            width={600}
-            height={900}
-            format="webp"
-            loading="eager"
-            fetchpriority="high"
-            class="book-cover-img"
-          />
-        </div>
-
-        {purchaseEntries.length > 0 && (
-          <div class="purchase-links">
-            <div class="purchase-label">Available at</div>
-            {purchaseEntries.map(([key, url]) => (
-              <a
-                href={url}
-                class="purchase-link"
-                target="_blank"
+          {purchaseLinks.amazon && (
+            <div class="book-actions">
+              <a 
+                href={purchaseLinks.amazon} 
+                class="btn btn-accent btn-block" 
+                target="_blank" 
                 rel="noopener noreferrer"
               >
-                {purchaseLabels[key] ?? key}
+                Buy on Amazon
               </a>
-            ))}
-          </div>
-        )}
-      </aside>
-
-      <!-- RIGHT: DETAILS -->
-      <div class="book-details">
-
-        <!-- Description -->
-        <div class="book-section">
-          <h2 class="book-section-title">About this book</h2>
-          <p class="book-description">{data.description}</p>
-        </div>
-
-        <!-- Author(s) -->
-        {authors.length > 0 && (
-  <div class="book-section">
-    <h2 class="book-section-title">
-      {authors.length > 1 ? 'Authors' : 'Author'}
-    </h2>
-    <div class="author-list">
-      {authors.map((author) => (
-        <a href={`/publishing/authors/${author.id}/`} class="author-card">
-          <div class="author-name">{author.data.name}</div>
-          {author.data.bio && (
-            <p class="author-bio">{author.data.bio}</p>
+              <p class="price-hint">Paperback · $12.99 USD</p>
+            </div>
           )}
-        </a>
-      ))}
-    </div>
-  </div>
-)}
+        </aside>
 
-        <!-- Metadata -->
-        <div class="book-section">
-          <h2 class="book-section-title">Details</h2>
-          <dl class="book-meta">
-            <div class="meta-row">
-              <dt>Published</dt>
-              <dd>{publicationDate}</dd>
-            </div>
-            <div class="meta-row">
-              <dt>Formats</dt>
-              <dd>{formatList}</dd>
-            </div>
-            <div class="meta-row">
-              <dt>Pages</dt>
-              <dd>{data.pageCount}</dd>
-            </div>
-            {data.ageRange && (
-              <div class="meta-row">
-                <dt>Age Range</dt>
-                <dd>{data.ageRange.min}–{data.ageRange.max} years</dd>
-              </div>
-            )}
-            <div class="meta-row">
-              <dt>Language</dt>
-              <dd>{data.language === 'en' ? 'English' : data.language.toUpperCase()}</dd>
-            </div>
-            <div class="meta-row">
-              <dt>ISBN-13</dt>
-              <dd class="mono-value">{data.isbn13}</dd>
-            </div>
-            <div class="meta-row">
-              <dt>Publisher</dt>
-              <dd>{data.imprint}</dd>
-            </div>
-            {categories.length > 1 && (
-              <div class="meta-row">
-                <dt>Categories</dt>
-                <dd>
-                  {categories.map((cat, i) => (
-                    <>
-                      <a href={`/publishing/categories/${cat.id}/`}>{cat.data.name}</a>
-                      {i < categories.length - 1 && ', '}
-                    </>
-                  ))}
-                </dd>
-              </div>
-            )}
-          </dl>
-        </div>
-
-        <!-- Keywords / tags -->
-        {data.keywords.length > 0 && (
+        <!-- Right Column: Details -->
+        <div class="book-content">
           <div class="book-section">
-            <h2 class="book-section-title">Subjects</h2>
-            <div class="keyword-list">
-              {data.keywords.map((kw) => (
-                <span class="keyword">{kw}</span>
-              ))}
-            </div>
+            <h2 class="book-section-title">About this book</h2>
+            <p class="book-description">{data.description}</p>
           </div>
-        )}
+
+          {authors.length > 0 && (
+            <div class="book-section">
+              <h2 class="book-section-title">
+                {authors.length > 1 ? 'Authors' : 'Author'}
+              </h2>
+              <div class="author-list">
+                {authors.map((author) => (
+                  <a href={`/publishing/authors/${author?.id}/`} class="author-card">
+                    <div class="author-name">{author?.data.name}</div>
+                    {author?.data.bio && (
+                      <p class="author-bio">{author.data.bio}</p>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div class="book-section">
+            <h2 class="book-section-title">Details</h2>
+            <dl class="book-metadata">
+              <div>
+                <dt>Published</dt>
+                <dd>{publicationDate}</dd>
+              </div>
+
+              <div>
+                <dt>Formats</dt>
+                <dd>{formatList}</dd>
+              </div>
+
+              <div>
+                <dt>Pages</dt>
+                <dd>{data.pageCount}</dd>
+              </div>
+
+              {data.trimSize && (
+                <div>
+                  <dt>Dimensions</dt>
+                  <dd>{data.trimSize}</dd>
+                </div>
+              )}
+
+              {data.ageRange && (
+                <div>
+                  <dt>Age Range</dt>
+                  <dd>{data.ageRange.min}–{data.ageRange.max} years</dd>
+                </div>
+              )}
+
+              <div>
+                <dt>Language</dt>
+                <dd>{data.language === 'en' ? 'English' : data.language.toUpperCase()}</dd>
+              </div>
+
+              {data.isbn13 && (
+                <div>
+                  <dt>ISBN-13</dt>
+                  <dd class="mono-value">{data.isbn13}</dd>
+                </div>
+              )}
+
+              {data.asin && (
+                <div>
+                  <dt>ASIN</dt>
+                  <dd class="mono-value">{data.asin}</dd>
+                </div>
+              )}
+
+              <div>
+                <dt>Publisher</dt>
+                <dd>{data.publisher}</dd>
+              </div>
+            </dl>
+          </div>
+
+          {data.keywords.length > 0 && (
+            <div class="book-section">
+              <h2 class="book-section-title">Subjects</h2>
+              <div class="tag-list">
+                {categories.map((cat) => (
+                  <a href={`/publishing/categories/${cat?.id}/`} class="tag">
+                    {cat?.data.name}
+                  </a>
+                ))}
+                {data.keywords.map((kw) => (
+                  <span class="tag">{kw}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
       </div>
-
     </div>
   </section>
 </BaseLayout>
@@ -307,243 +276,205 @@ const breadcrumbs = [
   /* ============================================================
      LAYOUT
      ============================================================ */
-
   .section {
     padding: clamp(80px, 10vw, 120px) 0;
   }
 
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
   .book-layout {
     display: grid;
-    grid-template-columns: minmax(280px, 400px) 1fr;
-    gap: clamp(40px, 6vw, 80px);
+    grid-template-columns: 1fr;
+    gap: 48px;
     align-items: start;
   }
 
-  @media (max-width: 900px) {
+  @media (min-width: 900px) {
     .book-layout {
-      grid-template-columns: 1fr;
+      grid-template-columns: 360px 1fr;
+      gap: 64px;
     }
   }
 
   /* ============================================================
-     COVER
+     SIDEBAR (Cover & Buy)
      ============================================================ */
-
-  .book-cover-wrap {
+  .book-sidebar {
     position: sticky;
-    top: 120px;
+    top: 100px;
   }
 
-  @media (max-width: 900px) {
-    .book-cover-wrap {
-      position: static;
-      max-width: 320px;
-      margin-inline: auto;
-    }
-  }
-
-  .book-cover {
-    aspect-ratio: 2 / 3;
-    background: var(--color-mist);
-    box-shadow: var(--shadow-book);
+  .book-cover-wrapper {
+    background: var(--gray-light);
+    border-radius: var(--radius);
     overflow: hidden;
-  }
-
-  .book-cover-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* ============================================================
-     PURCHASE LINKS
-     ============================================================ */
-
-  .purchase-links {
-    margin-top: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .purchase-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-slate);
-    margin-bottom: 6px;
-  }
-
-  .purchase-link {
-    display: block;
-    padding: 14px 20px;
-    background: var(--color-navy);
-    color: var(--color-paper);
-    text-decoration: none;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all var(--duration-base) var(--ease-standard);
-  }
-
-  .purchase-link:hover {
-    background: var(--color-navy-deep);
-    transform: translateY(-1px);
     box-shadow: var(--shadow-md);
+    margin-bottom: 24px;
+  }
+
+  .book-cover-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .book-actions {
+    text-align: center;
+  }
+
+  .btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 24px;
+    font-size: 1.1rem;
+  }
+
+  .price-hint {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #64748b;
   }
 
   /* ============================================================
-     DETAILS
+     CONTENT SECTIONS
      ============================================================ */
+  .book-section {
+    margin-bottom: 48px;
+  }
 
-  .book-details {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-12);
+  .book-section:last-child {
+    margin-bottom: 0;
   }
 
   .book-section-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--color-navy);
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: var(--border-hairline);
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-mid);
   }
 
   .book-description {
     font-size: 1.05rem;
-    line-height: 1.75;
-    color: #2A3441;
-    max-width: 60ch;
+    line-height: 1.7;
+    color: var(--text-soft);
   }
 
   /* ============================================================
-     AUTHOR(S)
+     AUTHOR CARD
      ============================================================ */
-
   .author-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 16px;
   }
 
   .author-card {
     display: block;
-    padding: 20px 24px;
-    border: var(--border-hairline);
+    padding: 24px;
+    background: white;
+    border: 1px solid var(--gray-mid);
+    border-radius: var(--radius);
     text-decoration: none;
-    transition: all var(--duration-base) var(--ease-standard);
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
   .author-card:hover {
-    border-color: rgba(184, 147, 63, 0.4);
-    background: var(--color-mist);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-sm);
   }
 
   .author-name {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--color-navy);
-    margin-bottom: 4px;
-  }
-
-  .author-role {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--color-slate);
-    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 8px;
   }
 
   .author-bio {
-    font-size: 0.92rem;
-    color: #2A3441;
-    line-height: 1.6;
-    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-soft);
+    line-height: 1.5;
   }
 
   /* ============================================================
-     METADATA
+     METADATA (DL)
      ============================================================ */
-
-  .book-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin: 0;
-  }
-
-  .meta-row {
+  .book-metadata {
     display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 20px;
-    padding-bottom: 12px;
-    border-bottom: var(--border-hairline);
-    font-size: 0.92rem;
+    gap: 0;
   }
 
-  .meta-row:last-child {
+  .book-metadata > div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  .book-metadata > div:last-child {
     border-bottom: none;
   }
 
-  .meta-row dt {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--color-slate);
-    padding-top: 3px;
+  @media (min-width: 600px) {
+    .book-metadata > div {
+      grid-template-columns: 200px 1fr;
+      gap: 24px;
+      align-items: baseline;
+    }
   }
 
-  .meta-row dd {
-    color: var(--color-navy);
-    font-weight: 500;
+  .book-metadata dt {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  .book-metadata dd {
+    font-size: 1rem;
+    color: var(--text-dark);
     margin: 0;
   }
 
-  .meta-row dd a {
-    color: var(--color-navy);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(11, 47, 91, 0.2);
-    transition: all var(--duration-base) var(--ease-standard);
-  }
-
-  .meta-row dd a:hover {
-    color: var(--color-gold);
-    border-bottom-color: var(--color-gold);
-  }
-
   .mono-value {
-    font-family: var(--font-mono);
-    font-size: 0.85rem !important;
-    letter-spacing: 0.04em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.02em;
   }
 
   /* ============================================================
-     KEYWORDS
+     TAGS (Subjects)
      ============================================================ */
-
-  .keyword-list {
+  .tag-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
   }
 
-  .keyword {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    background: var(--color-mist);
-    color: var(--color-slate);
-    border: var(--border-hairline);
+  .tag {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--gray-light);
+    border: 1px solid var(--gray-mid);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  a.tag:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
   }
 </style>

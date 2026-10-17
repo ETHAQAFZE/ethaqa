@@ -1,0 +1,319 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { Image } from 'astro:assets';
+import { getBooksByAuthor } from '../../lib/books';
+import { getCollection } from 'astro:content';
+
+import type { CollectionEntry } from 'astro:content';
+
+// ------------------------------------------------------------
+// Dynamic route: one page per author
+// ------------------------------------------------------------
+export async function getStaticPaths() {
+  const authors = await getCollection('authors');
+  return authors.map((author) => ({
+    params: { slug: author.id },
+    props: { author },
+  }));
+}
+
+interface Props {
+  author: CollectionEntry<'authors'>;
+}
+
+const { author } = Astro.props;
+const authorInfo = author.data;
+
+if (!authorInfo) {
+  return Astro.redirect('/publishing/404');
+}
+
+// Fetch all books by this author
+const books = await getBooksByAuthor(author.id);
+
+// ------------------------------------------------------------
+// SEO & Headers
+// ------------------------------------------------------------
+const title = `${authorInfo.name} — Ethaqa Publishing`;
+const description = authorInfo.bio || `Browse books by ${authorInfo.name}.`;
+
+const breadcrumbs = [
+  { label: 'Authors', href: '/publishing/authors/' },
+  { label: authorInfo.name },
+];
+
+// Structured Data for the Author
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: authorInfo.name,
+  description: authorInfo.bio,
+  ...(authorInfo.website && { url: authorInfo.website }),
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="profile"
+  ogImage={authorInfo.photo}
+  jsonLd={jsonLd}
+  bodyClass="page-author-detail"
+>
+  <PageHero
+    breadcrumbs={breadcrumbs}
+    eyebrow="Author"
+    title={authorInfo.name}
+    lead={authorInfo.bio}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="author-layout">
+        
+        <!-- Left Column: Author Info -->
+        <aside class="author-sidebar">
+          {authorInfo.photo && (
+            <div class="author-photo-wrapper">
+              <img src={authorInfo.photo} alt={authorInfo.name} class="author-photo" />
+            </div>
+          )}
+
+          {authorInfo.website && (
+            <div class="author-links">
+              <h3 class="author-links-title">Connect</h3>
+              <a href={authorInfo.website} target="_blank" rel="noopener noreferrer" class="author-website-link">
+                Website ↗
+              </a>
+            </div>
+          )}
+
+          {authorInfo.social && (
+            <div class="author-socials">
+              {authorInfo.social.twitter && (
+                <a href={`https://twitter.com/${authorInfo.social.twitter}`} target="_blank" rel="noopener noreferrer">Twitter</a>
+              )}
+              {authorInfo.social.instagram && (
+                <a href={`https://instagram.com/${authorInfo.social.instagram}`} target="_blank" rel="noopener noreferrer">Instagram</a>
+              )}
+            </div>
+          )}
+        </aside>
+
+        <!-- Right Column: Books -->
+        <div class="author-content">
+          <h2 class="section-title">Books by {authorInfo.name}</h2>
+
+          {books.length === 0 ? (
+            <p class="no-books">No books found for this author yet.</p>
+          ) : (
+            <ul class="book-grid">
+              {books.map((book) => (
+                <li class="book-card">
+                  <a href={`/publishing/books/${book.id}/`} class="book-card-link">
+                    <div class="book-cover-wrapper">
+                      <Image
+                        src={book.data.cover.src}
+                        alt={book.data.cover.alt}
+                        widths={[300, 600]}
+                        sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+                        class="book-cover-image"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div class="book-card-content">
+                      <h3 class="book-title">{book.data.title}</h3>
+                      {book.data.subtitle && (
+                        <p class="book-subtitle">{book.data.subtitle}</p>
+                      )}
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ============================================================
+     LAYOUT
+     ============================================================ */
+  .section {
+    padding: clamp(60px, 8vw, 100px) 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .author-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .author-layout {
+      grid-template-columns: 300px 1fr;
+    }
+  }
+
+  /* ============================================================
+     SIDEBAR
+     ============================================================ */
+  .author-sidebar {
+    position: sticky;
+    top: 100px;
+  }
+
+  .author-photo-wrapper {
+    aspect-ratio: 1 / 1;
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .author-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .author-links, .author-socials {
+    margin-bottom: 24px;
+  }
+
+  .author-links-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 12px;
+  }
+
+  .author-website-link {
+    display: inline-block;
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--primary);
+    padding-bottom: 2px;
+    transition: opacity 0.2s;
+  }
+
+  .author-website-link:hover {
+    opacity: 0.7;
+  }
+
+  .author-socials {
+    display: flex;
+    gap: 16px;
+  }
+
+  .author-socials a {
+    color: var(--text-soft);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .author-socials a:hover {
+    color: var(--accent);
+  }
+
+  /* ============================================================
+     CONTENT & GRID
+     ============================================================ */
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 40px 32px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .book-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .book-cover-wrapper {
+    position: relative;
+    aspect-ratio: 8.5 / 8.5;
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .book-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .book-card-link:hover .book-cover-wrapper {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .book-card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .book-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    margin-bottom: 12px;
+    flex-grow: 1;
+  }
+
+  .no-books {
+    color: var(--text-soft);
+    font-style: italic;
+  }
+</style>

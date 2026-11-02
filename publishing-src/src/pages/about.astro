@@ -329,27 +329,31 @@ const description = 'Publishing knowledge that inspires, educates, and empowers 
     font-weight: 600;
   }
 
-  /* ============================================================
+ /* ============================================================
      COMPANY & CTA
      ============================================================ */
   .company-block {
-    background: var(--primary);
-    color: white;
+    background-color: var(--primary); /* Forces the dark blue background */
+    color: #ffffff;
     padding: 48px;
     border-radius: var(--radius);
   }
 
   .company-block .section-title {
-    color: white;
-    border-bottom-color: rgba(255,255,255,0.2);
+    color: #ffffff;
+    border-bottom-color: rgba(255, 255, 255, 0.2);
   }
 
   .company-block p {
-    color: #cbdae9;
+    color: #cbdae9; /* Light grey text */
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0; /* Removes extra spacing */
   }
 
   .company-block strong {
-    color: white;
+    color: #ffffff; /* Pure white for the company name */
+    font-weight: 700;
   }
 
   .about-cta {

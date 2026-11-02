@@ -1,20 +1,20 @@
 ---
-title: "Ellie Little Adventures: Book One"
-subtitle: "A Fun Toddler Coloring Book"
-slug: a-day-with-ellie # Keeping the slug so the URL doesn't break
+title: "A Day with Ellie"
+subtitle: "A Sweet Preschool Coloring Book for Ages 2–5"
+slug: a-day-with-ellie
 authors:
   - luma-wren
 categories:
   - coloring-books
-description: "Join Ellie on a fun-filled coloring adventure! With 40 adorable pages of everyday adventures, this toddler coloring book is designed to spark imagination and creativity in little ones."
-shortDescription: "A fun 40-page toddler coloring book featuring Ellie."
+description: "Follow Ellie through a single day as she learns that big feelings are easier to carry when they are shared. A gentle, warm picture book for readers aged three to six."
+shortDescription: "A sweet preschool coloring book featuring Ellie."
 cover:
   src: ../../assets/covers/a-day-with-ellie/front.png
-  alt: The cover of Ellie Little Adventures, showing a cartoon elephant in a garden.
-isbn13: "" # Leave blank if you only have the ASIN right now
-asin: "B0HN7P1ZJJ"
+  alt: The cover of A Day with Ellie.
+asin: "B0HPB9V75Z"
+isbn13: "979-8175123723"
 pageCount: 40
-trimSize: "8.5 x 8.5 in"
+trimSize: "8.5 x 0.1 x 8.5 inches"
 ageRange:
   min: 2
   max: 5
@@ -22,17 +22,15 @@ publisher: Ethaqa FZE LLC
 imprint: Ethaqa Publishing
 format:
   - paperback
-  - ebook
-publicationDate: 2026-10-16 # Based on KDP "Submitted on"
+publicationDate: 2026-10-08
 language: en
 keywords:
   - toddler coloring book
   - preschool coloring
-  - kids coloring book
-  - elephant coloring book
-  - childrens book
+  - feelings
+  - kindness
 featured: true
 status: published
 purchaseLinks:
-  amazon: "https://www.amazon.com/dp/B0HN7P1ZJJ"
+  amazon: "https://www.amazon.com/dp/B0HPB9V75Z"
 ---

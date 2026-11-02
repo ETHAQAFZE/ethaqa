@@ -1,0 +1,36 @@
+---
+title: "Ellie Little Adventures: Book One"
+subtitle: "A Fun Toddler Coloring Book"
+slug: ellie-book-one
+authors:
+  - luma-wren
+categories:
+  - coloring-books
+description: "Join Ellie on a fun-filled coloring adventure! With 40 adorable pages of everyday adventures, this toddler coloring book is designed to spark imagination and creativity in little ones."
+shortDescription: "A fun 40-page toddler coloring book featuring Ellie."
+cover:
+  src: ../../assets/covers/Book%20One/front.png
+  alt: The cover of Ellie Little Adventures, showing a cartoon elephant coloring.
+asin: "B0HN7P1ZJJ"
+isbn13: "979-8177460963"
+pageCount: 40
+trimSize: "8.5 x 0.1 x 8.5 inches"
+ageRange:
+  min: 2
+  max: 5
+publisher: Ethaqa FZE LLC
+imprint: Ethaqa Publishing
+format:
+  - paperback
+publicationDate: 2026-10-08
+language: en
+keywords:
+  - toddler coloring book
+  - preschool coloring
+  - kids coloring book
+  - elephant coloring book
+featured: false
+status: published
+purchaseLinks:
+  amazon: "https://www.amazon.com/dp/B0HN7P1ZJJ"
+---

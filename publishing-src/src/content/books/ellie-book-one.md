@@ -9,7 +9,7 @@ categories:
 description: "Join Ellie on a fun-filled coloring adventure! With 40 adorable pages of everyday adventures, this toddler coloring book is designed to spark imagination and creativity in little ones."
 shortDescription: "A fun 40-page toddler coloring book featuring Ellie."
 cover:
-  src: ../../assets/covers/Book%20One/front.png
+  src: ../../assets/covers/book-one/front.png
   alt: The cover of Ellie Little Adventures, showing a cartoon elephant coloring.
 asin: "B0HN7P1ZJJ"
 isbn13: "979-8177460963"
